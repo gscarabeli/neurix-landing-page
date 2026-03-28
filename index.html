@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Neurix — Onde a ciência encontra o jogo</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --p50:  #f3f0ff;
+    --p100: #e5deff;
+    --p200: #c9bbfd;
+    --p400: #9b7ef8;
+    --p500: #7c5ce8;
+    --p600: #6344d0;
+    --p700: #4a2eb8;
+    --p800: #321a96;
+    --green: #6ee7b7;
+    --green2: #34d399;
+    --amber: #fbbf24;
+    --bg: #0a0612;
+    --bg2: #110b1e;
+    --bg3: #1a1030;
+    --card: rgba(255,255,255,0.04);
+    --border: rgba(155,126,248,0.18);
+    --text: #f0ecff;
+    --muted: #a89fd4;
+    --font-head: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.025;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── GLOW ORBS ── */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+    filter: blur(80px);
+    opacity: 0.35;
+  }
+  .orb-1 { width: 600px; height: 600px; background: var(--p500); top: -200px; left: -150px; }
+  .orb-2 { width: 400px; height: 400px; background: var(--p400); bottom: 10%; right: -100px; }
+  .orb-3 { width: 300px; height: 300px; background: #1e3a5f; top: 40%; left: 30%; }
+
+  section, nav, footer { position: relative; z-index: 1; }
+
+  /* ── NAV ── */
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px 6vw;
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    background: rgba(10,6,18,0.6);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .nav-logo {
+    font-family: var(--font-head);
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .nav-logo span {
+    display: inline-block;
+    width: 28px; height: 28px;
+    background: var(--p500);
+    border-radius: 8px;
+    position: relative;
+  }
+  .nav-logo span::after {
+    content: '';
+    position: absolute;
+    inset: 5px;
+    border-radius: 50%;
+    background: var(--p200);
+    opacity: 0.7;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+
+  .nav-cta {
+    background: var(--p500);
+    color: #fff;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 100px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .nav-cta:hover { background: var(--p600); transform: translateY(-1px); }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 92vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 60px;
+    padding: 80px 6vw;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(155,126,248,0.12);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--p200);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    animation: fadeUp 0.7s ease both;
+  }
+  .hero-badge::before {
+    content: '';
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--green2);
+    box-shadow: 0 0 6px var(--green2);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%,100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  h1 {
+    font-family: var(--font-head);
+    font-size: clamp(38px, 5vw, 64px);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    color: var(--text);
+    margin-bottom: 24px;
+    animation: fadeUp 0.7s 0.1s ease both;
+  }
+
+  h1 .accent {
+    color: var(--p400);
+    position: relative;
+    display: inline-block;
+  }
+  h1 .accent::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--p400), var(--green));
+    border-radius: 2px;
+  }
+
+  .hero-sub {
+    font-size: 18px;
+    color: var(--muted);
+    font-weight: 300;
+    max-width: 480px;
+    margin-bottom: 40px;
+    line-height: 1.65;
+    animation: fadeUp 0.7s 0.2s ease both;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    animation: fadeUp 0.7s 0.3s ease both;
+  }
+
+  .btn-primary {
+    background: var(--p500);
+    color: #fff;
+    border: none;
+    padding: 14px 30px;
+    border-radius: 100px;
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-primary:hover { background: var(--p600); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(124,92,232,0.4); }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 14px 30px;
+    border-radius: 100px;
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-secondary:hover { border-color: var(--p400); color: var(--p200); }
+
+  .hero-img {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: floatIn 0.9s 0.2s ease both;
+    position: relative;
+  }
+
+  .hero-img img {
+    width: 100%;
+    max-width: 380px;
+    filter: drop-shadow(0 0 60px rgba(124,92,232,0.5));
+    animation: float 4s ease-in-out infinite;
+  }
+
+  .hero-img::before {
+    content: '';
+    position: absolute;
+    width: 320px; height: 320px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(124,92,232,0.2) 0%, transparent 70%);
+    z-index: -1;
+  }
+
+  @keyframes float {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-16px); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes floatIn {
+    from { opacity: 0; transform: translateY(32px) scale(0.95); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* ── STATS STRIP ── */
+  .stats {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: rgba(155,126,248,0.04);
+  }
+  .stat {
+    flex: 1;
+    max-width: 220px;
+    padding: 28px 20px;
+    text-align: center;
+    border-right: 1px solid var(--border);
+  }
+  .stat:last-child { border-right: none; }
+  .stat-num {
+    font-family: var(--font-head);
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--p400);
+    letter-spacing: -0.02em;
+    display: block;
+  }
+  .stat-label {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 400;
+    margin-top: 2px;
+    display: block;
+  }
+
+  /* ── SECTION TITLES ── */
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--p400);
+    margin-bottom: 12px;
+    display: block;
+  }
+  h2 {
+    font-family: var(--font-head);
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    color: var(--text);
+    margin-bottom: 16px;
+  }
+  .section-sub {
+    color: var(--muted);
+    font-size: 17px;
+    font-weight: 300;
+    max-width: 520px;
+    line-height: 1.65;
+  }
+
+  /* ── HOW IT WORKS ── */
+  #como-funciona {
+    padding: 100px 6vw;
+  }
+  .how-header {
+    text-align: center;
+    margin-bottom: 64px;
+  }
+  .how-header .section-sub { margin: 0 auto; }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    position: relative;
+  }
+
+  .steps::before {
+    content: '';
+    position: absolute;
+    top: 48px;
+    left: calc(16.66% + 24px);
+    right: calc(16.66% + 24px);
+    height: 1px;
+    background: linear-gradient(90deg, var(--p500), var(--green2));
+    opacity: 0.4;
+  }
+
+  .step-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px 28px;
+    position: relative;
+    transition: transform 0.25s, border-color 0.25s;
+  }
+  .step-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(155,126,248,0.4);
+  }
+
+  .step-num {
+    width: 48px; height: 48px;
+    border-radius: 14px;
+    background: var(--p500);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: 18px;
+    color: #fff;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+  }
+  .step-num.green { background: linear-gradient(135deg, var(--p500), #059669); }
+  .step-num.amber { background: linear-gradient(135deg, var(--p400), var(--amber)); }
+
+  .step-card h3 {
+    font-family: var(--font-head);
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 10px;
+    letter-spacing: -0.01em;
+  }
+  .step-card p {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  /* ── FOR WHO ── */
+  #para-quem {
+    padding: 100px 6vw;
+    background: linear-gradient(180deg, transparent, rgba(124,92,232,0.06) 50%, transparent);
+  }
+
+  .for-who-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+  }
+
+  .for-who-visual {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .profile-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 22px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: transform 0.2s, border-color 0.2s;
+    cursor: default;
+  }
+  .profile-card:hover {
+    transform: translateX(8px);
+    border-color: rgba(155,126,248,0.4);
+  }
+
+  .profile-icon {
+    width: 48px; height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .ic-purple { background: rgba(124,92,232,0.2); }
+  .ic-green  { background: rgba(110,231,183,0.15); }
+  .ic-amber  { background: rgba(251,191,36,0.15); }
+
+  .profile-info strong {
+    display: block;
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--text);
+    margin-bottom: 3px;
+  }
+  .profile-info span {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .profile-tag {
+    margin-left: auto;
+    flex-shrink: 0;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 100px;
+  }
+  .tag-primary { background: rgba(124,92,232,0.2); color: var(--p200); }
+  .tag-future  { background: rgba(255,255,255,0.06); color: var(--muted); border: 1px solid var(--border); }
+
+  .for-who-text { padding-left: 20px; }
+  .for-who-text h2 { margin-bottom: 20px; }
+  .for-who-text .section-sub { margin-bottom: 32px; }
+
+  .check-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .check-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 15px;
+    color: var(--muted);
+  }
+  .check-list li::before {
+    content: '';
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: rgba(110,231,183,0.2);
+    border: 1px solid var(--green2);
+    display: flex;
+    flex-shrink: 0;
+    margin-top: 3px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2 6l3 3 5-5' stroke='%2334d399' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 10px;
+  }
+
+  /* ── CONTACT ── */
+  #contato {
+    padding: 100px 6vw;
+  }
+  .contact-wrap {
+    max-width: 680px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .contact-wrap h2 { margin-bottom: 12px; }
+  .contact-wrap .section-sub { margin: 0 auto 48px; }
+
+  .form-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 40px;
+    text-align: left;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+  .form-group label {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 16px;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+  }
+  .form-group input::placeholder,
+  .form-group textarea::placeholder { color: rgba(168,159,212,0.4); }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus { border-color: var(--p400); }
+  .form-group select option { background: var(--bg2); }
+  .form-group textarea { resize: vertical; min-height: 110px; }
+
+  .form-submit {
+    width: 100%;
+    background: var(--p500);
+    color: #fff;
+    border: none;
+    padding: 16px;
+    border-radius: 100px;
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 8px;
+    letter-spacing: 0.01em;
+  }
+  .form-submit:hover { background: var(--p600); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(124,92,232,0.4); }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 40px 6vw;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  .footer-logo {
+    font-family: var(--font-head);
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+  .footer-copy {
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .footer-note {
+    font-size: 12px;
+    color: rgba(168,159,212,0.5);
+    background: rgba(155,126,248,0.06);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 12px;
+  }
+
+  /* ── SCROLL REVEAL ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    #hero { grid-template-columns: 1fr; text-align: center; }
+    .hero-img { order: -1; }
+    .hero-img img { max-width: 260px; }
+    .hero-actions { justify-content: center; }
+    .steps { grid-template-columns: 1fr; }
+    .steps::before { display: none; }
+    .for-who-grid { grid-template-columns: 1fr; }
+    .for-who-text { padding-left: 0; }
+    .form-row { grid-template-columns: 1fr; }
+    .stats { flex-wrap: wrap; }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <span></span>
+    Neurix
+  </div>
+  <ul class="nav-links">
+    <li><a href="#como-funciona">Como funciona</a></li>
+    <li><a href="#para-quem">Para quem é</a></li>
+    <li><a href="#contato">Contato</a></li>
+  </ul>
+  <button class="nav-cta" onclick="document.getElementById('contato').scrollIntoView({behavior:'smooth'})">Solicitar acesso</button>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-content">
+    <div class="hero-badge">Ferramenta clínica de apoio</div>
+    <h1>A avaliação de TDAH que a criança <span class="accent">quer fazer</span></h1>
+    <p class="hero-sub">O Neurix transforma a triagem de TDAH em uma experiência lúdica para crianças — e entrega dados comportamentais precisos para o profissional de saúde.</p>
+    <div class="hero-actions">
+      <a href="#contato" class="btn-primary">Solicitar demonstração</a>
+      <a href="#como-funciona" class="btn-secondary">Como funciona →</a>
+    </div>
+  </div>
+  <div class="hero-img">
+    <img src="astrocogni.webp" alt="AstroCogni — mascote do Neurix"/>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat">
+    <span class="stat-num">5–12</span>
+    <span class="stat-label">Faixa etária atendida</span>
+  </div>
+  <div class="stat">
+    <span class="stat-num">B2B</span>
+    <span class="stat-label">Focado em profissionais</span>
+  </div>
+  <div class="stat">
+    <span class="stat-num">LGPD</span>
+    <span class="stat-label">Dados protegidos</span>
+  </div>
+  <div class="stat">
+    <span class="stat-num">DSM‑5</span>
+    <span class="stat-label">Critérios clínicos</span>
+  </div>
+</div>
+
+<!-- COMO FUNCIONA -->
+<section id="como-funciona">
+  <div class="how-header reveal">
+    <span class="section-label">Como funciona</span>
+    <h2>Simples para a criança.<br>Rico em dados para você.</h2>
+    <p class="section-sub">Três etapas que transformam uma sessão lúdica em informação clínica estruturada.</p>
+  </div>
+
+  <div class="steps">
+    <div class="step-card reveal reveal-delay-1">
+      <div class="step-num">01</div>
+      <h3>A criança joga</h3>
+      <p>Mecânicas de jogo cuidadosamente desenhadas com base nos critérios do DSM‑5 capturam indicadores de atenção, impulsividade e tempo de reação — sem que a criança perceba que está sendo avaliada.</p>
+    </div>
+    <div class="step-card reveal reveal-delay-2">
+      <div class="step-num green">02</div>
+      <h3>O app coleta métricas</h3>
+      <p>Durante a sessão, o Neurix registra automaticamente dados comportamentais e cognitivos de forma segura, anonimizada e em conformidade com a LGPD.</p>
+    </div>
+    <div class="step-card reveal reveal-delay-3">
+      <div class="step-num amber">03</div>
+      <h3>Você recebe o relatório</h3>
+      <p>O profissional acessa um painel exclusivo com o histórico da criança e relatórios estruturados para embasar a avaliação clínica. Uma ferramenta de apoio, não de diagnóstico.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PARA QUEM É -->
+<section id="para-quem">
+  <div class="for-who-grid">
+    <div class="for-who-visual reveal">
+      <div class="profile-card">
+        <div class="profile-icon ic-purple">🧠</div>
+        <div class="profile-info">
+          <strong>Psicólogos clínicos infantis</strong>
+          <span>Consultórios e clínicas privadas</span>
+        </div>
+        <span class="profile-tag tag-primary">Principal</span>
+      </div>
+      <div class="profile-card">
+        <div class="profile-icon ic-purple">🔬</div>
+        <div class="profile-info">
+          <strong>Neuropsicólogos</strong>
+          <span>Avaliação do neurodesenvolvimento</span>
+        </div>
+        <span class="profile-tag tag-primary">Principal</span>
+      </div>
+      <div class="profile-card">
+        <div class="profile-icon ic-green">🏥</div>
+        <div class="profile-info">
+          <strong>Clínicas multidisciplinares</strong>
+          <span>Equipes de neurodesenvolvimento</span>
+        </div>
+        <span class="profile-tag tag-primary">Principal</span>
+      </div>
+      <div class="profile-card" style="opacity:0.6;">
+        <div class="profile-icon ic-amber">🎓</div>
+        <div class="profile-info">
+          <strong>Escolas e psicopedagogos</strong>
+          <span>Equipes de apoio educacional</span>
+        </div>
+        <span class="profile-tag tag-future">Em breve</span>
+      </div>
+    </div>
+
+    <div class="for-who-text reveal reveal-delay-1">
+      <span class="section-label">Para quem é</span>
+      <h2>Feito para profissionais que levam a sério a avaliação infantil.</h2>
+      <p class="section-sub">O Neurix não é um app de consumo. É uma ferramenta clínica desenvolvida em parceria com profissionais da área.</p>
+      <ul class="check-list">
+        <li>Distribuição exclusiva B2B — não disponível em lojas de apps</li>
+        <li>Onboarding assistido para cada profissional</li>
+        <li>Suporte direto e atendimento personalizado</li>
+        <li>Alinhado com as diretrizes do CFP</li>
+        <li>Relatórios que complementam, não substituem, a avaliação clínica</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- CONTATO -->
+<section id="contato">
+  <div class="contact-wrap">
+    <div class="reveal">
+      <span class="section-label">Entre em contato</span>
+      <h2>Vamos conversar sobre o seu consultório.</h2>
+      <p class="section-sub">O processo de acesso ao Neurix é individualizado. Preencha o formulário e entraremos em contato para uma demonstração gratuita.</p>
+    </div>
+
+    <div class="form-card reveal reveal-delay-1">
+      <!-- ✏️ FORMSPREE: substitua SEU_FORM_ID pelo ID gerado em formspree.io/new -->
+      <form id="neurix-form" action="https://formspree.io/f/xkopoejr" method="POST" novalidate>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="nome">Nome</label>
+            <input id="nome" type="text" name="nome" placeholder="Dr(a). Nome Sobrenome" required/>
+          </div>
+          <div class="form-group">
+            <label for="email">E-mail profissional</label>
+            <input id="email" type="email" name="email" placeholder="nome@clinica.com.br" required/>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="especialidade">Especialidade</label>
+            <select id="especialidade" name="especialidade" required>
+              <option value="" disabled selected>Selecione...</option>
+              <option>Psicólogo clínico</option>
+              <option>Neuropsicólogo</option>
+              <option>Neuropediatra</option>
+              <option>Clínica / Centro multidisciplinar</option>
+              <option>Psicopedagogo</option>
+              <option>Outro</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="cidade">Cidade / Estado</label>
+            <input id="cidade" type="text" name="cidade" placeholder="São Paulo, SP"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="mensagem">Mensagem (opcional)</label>
+          <textarea id="mensagem" name="mensagem" placeholder="Conte um pouco sobre seu contexto de trabalho com crianças..."></textarea>
+        </div>
+        <!-- Campo honeypot anti-spam (invisível) -->
+        <input type="text" name="_gotcha" style="display:none"/>
+        <!-- Redireciona de volta para a própria página após envio -->
+        <input type="hidden" name="_next" value="?enviado=true"/>
+        <button type="submit" class="form-submit" id="form-btn">Solicitar demonstração gratuita</button>
+      </form>
+      <div id="form-success" style="display:none;text-align:center;padding:32px 0;">
+        <div style="font-size:40px;margin-bottom:12px;">🚀</div>
+        <p style="font-family:var(--font-head);font-size:20px;font-weight:700;color:var(--text);margin-bottom:8px;">Mensagem enviada!</p>
+        <p style="color:var(--muted);font-size:14px;">Entraremos em contato em breve para agendar sua demonstração gratuita.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Neurix</div>
+  <div class="footer-copy">© 2025 Neurix. Projeto acadêmico — TCC Engenharia da Computação.</div>
+  <div class="footer-note">Ferramenta de apoio clínico. Não substitui diagnóstico profissional.</div>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  const form = document.getElementById('neurix-form');
+  const btn  = document.getElementById('form-btn');
+  const success = document.getElementById('form-success');
+
+  if (new URLSearchParams(window.location.search).get('enviado') === 'true') {
+    form.style.display = 'none';
+    success.style.display = 'block';
+  }
+
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const nome = form.querySelector('[name="nome"]').value.trim();
+    const email = form.querySelector('[name="email"]').value.trim();
+    const esp = form.querySelector('[name="especialidade"]').value;
+
+    if (!nome || !email || !esp) {
+      btn.textContent = 'Preencha os campos obrigatórios';
+      btn.style.background = '#b45309';
+      setTimeout(() => {
+        btn.textContent = 'Solicitar demonstração gratuita';
+        btn.style.background = '';
+      }, 2500);
+      return;
+    }
+
+    btn.textContent = 'Enviando...';
+    btn.disabled = true;
+
+    try {
+      const res = await fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { 'Accept': 'application/json' }
+      });
+
+      if (res.ok) {
+        form.style.display = 'none';
+        success.style.display = 'block';
+        success.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else {
+        throw new Error();
+      }
+    } catch {
+      btn.textContent = 'Erro ao enviar. Tente novamente.';
+      btn.style.background = '#991b1b';
+      btn.disabled = false;
+      setTimeout(() => {
+        btn.textContent = 'Solicitar demonstração gratuita';
+        btn.style.background = '';
+      }, 3000);
+    }
+  });
+</script>
+</body>
+</html>
