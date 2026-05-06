@@ -14,7 +14,8 @@
   position: relative;
   background: #0d0d12;
   border-radius: 16px;
-  border: 0.5px solid rgba(127,119,221,0.35);
+  border: none;
+  outline: 1px solid rgba(127,119,221,0.18);
   overflow: hidden;
   box-shadow: 0 16px 48px rgba(0,0,0,0.45);
 }
@@ -133,57 +134,7 @@
   font-family: monospace;
 }
 
-/* volume */
-.vol-group {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
-}
-.vol-slider {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 60px;
-  height: 4px;
-  border-radius: 2px;
-  background: rgba(255,255,255,0.18);
-  cursor: pointer;
-  outline: none;
-}
-.vol-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: #7F77DD;
-  cursor: pointer;
-}
-.vol-slider::-moz-range-thumb {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: #7F77DD;
-  border: none;
-  cursor: pointer;
-}
 
-/* speed */
-.speed-btn {
-  font-size: 11px;
-  font-weight: 600;
-  color: rgba(176,174,232,0.9);
-  background: rgba(127,119,221,0.12);
-  border: 0.5px solid rgba(127,119,221,0.3);
-  border-radius: 6px;
-  padding: 3px 9px;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: background 0.15s, color 0.15s;
-}
-.speed-btn:hover {
-  background: rgba(127,119,221,0.28);
-  color: #fff;
-}
 
 /* fullscreen in player mode */
 .player-outer:-webkit-full-screen { border-radius: 0; }
@@ -285,13 +236,13 @@
       <!-- ═══════════════════════════════════════════
            PLAYER CUSTOMIZADO NEURIX
            Substitui a tag <video> original.
-           O arquivo de vídeo continua sendo "demo-video.mp4"
+           O arquivo de vídeo continua sendo "Landing Page.mp4"
            e o poster "demo-poster.png" — sem alterar nada mais.
       ════════════════════════════════════════════ -->
       <div class="player-outer" id="playerWrap">
 
         <video id="vid" preload="metadata" poster="demo-poster.png">
-          <source src="demo-video.mp4" type="video/mp4">
+          <source src="Landing Page.mp4" type="video/mp4">
           Seu navegador não suporta vídeo.
         </video>
 
@@ -322,18 +273,7 @@
             </div>
           </div>
 
-          <!-- volume -->
-          <div class="vol-group">
-            <button class="ctrl-btn" id="muteBtn" aria-label="Mudo / Som">
-              <svg viewBox="0 0 24 24"><path id="volIconPath" d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
-            </button>
-            <input class="vol-slider" type="range" min="0" max="1" step="0.05" value="1" id="volSlider" aria-label="Volume"/>
-          </div>
-
-          <!-- velocidade -->
-          <button class="speed-btn" id="speedBtn" aria-label="Velocidade de reprodução">1×</button>
-
-          <!-- tela cheia -->
+<!-- tela cheia -->
           <button class="ctrl-btn" id="fsBtn" aria-label="Tela cheia">
             <svg viewBox="0 0 24 24"><path id="fsIconPath" d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
           </button>
@@ -486,25 +426,16 @@
   const progressThumb= document.getElementById('progressThumb');
   const timeCurrent  = document.getElementById('timeCurrent');
   const timeDuration = document.getElementById('timeDuration');
-  const muteBtn      = document.getElementById('muteBtn');
-  const volIconPath  = document.getElementById('volIconPath');
-  const volSlider    = document.getElementById('volSlider');
-  const speedBtn     = document.getElementById('speedBtn');
   const fsBtn        = document.getElementById('fsBtn');
   const playerWrap   = document.getElementById('playerWrap');
 
   /* SVG path constants */
   const P_PLAY  = 'M8 5v14l11-7z';
   const P_PAUSE = 'M6 19h4V5H6v14zm8-14v14h4V5h-4z';
-  const P_VOL   = 'M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z';
-  const P_MUTE  = 'M16.5 12A4.5 4.5 0 0 0 14 7.97v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51A8.796 8.796 0 0 0 21 12c0-4.28-3-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25A7.04 7.04 0 0 1 14 17.27v2.06a8.989 8.989 0 0 0 4.24-2.27l1.52 1.52L21 17.27l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z';
   const P_FS_IN = 'M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z';
   const P_FS_OUT= 'M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z';
 
-  const speeds = [0.5, 1, 1.25, 1.5, 2];
-  let speedIdx = 1;
-
-  /* helpers */
+/* helpers */
   function fmt(s) {
     if (isNaN(s)) return '0:00';
     const m = Math.floor(s / 60);
@@ -571,26 +502,6 @@
   playPauseBtn.addEventListener('click', togglePlay);
   overlayBtn.addEventListener('click', togglePlay);
   vid.addEventListener('click', togglePlay);
-
-  /* volume */
-  muteBtn.addEventListener('click', () => {
-    vid.muted = !vid.muted;
-    volIconPath.setAttribute('d', vid.muted ? P_MUTE : P_VOL);
-    volSlider.value = vid.muted ? 0 : vid.volume;
-  });
-
-  volSlider.addEventListener('input', () => {
-    vid.volume = parseFloat(volSlider.value);
-    vid.muted = vid.volume === 0;
-    volIconPath.setAttribute('d', vid.muted ? P_MUTE : P_VOL);
-  });
-
-  /* speed */
-  speedBtn.addEventListener('click', () => {
-    speedIdx = (speedIdx + 1) % speeds.length;
-    vid.playbackRate = speeds[speedIdx];
-    speedBtn.textContent = speeds[speedIdx] + '×';
-  });
 
   /* fullscreen */
   fsBtn.addEventListener('click', () => {
