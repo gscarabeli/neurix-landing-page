@@ -7,6 +7,190 @@
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <link rel="icon" href="Cogni_Saudacao.ico">
 <link rel="stylesheet" href="style.css">
+
+<style>
+/* ── VIDEO PLAYER ── */
+.player-outer {
+  position: relative;
+  background: #0d0d12;
+  border-radius: 16px;
+  border: 0.5px solid rgba(127,119,221,0.35);
+  overflow: hidden;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.45);
+}
+
+.player-outer video {
+  display: block;
+  width: 100%;
+  max-height: 460px;
+  object-fit: contain;
+  cursor: pointer;
+}
+
+/* big play overlay */
+.player-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(13,13,18,0.48);
+  transition: opacity 0.25s ease;
+  cursor: pointer;
+}
+.player-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.overlay-play-btn {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: #7F77DD;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+.overlay-play-btn:hover {
+  background: #AFA9EC;
+  transform: scale(1.08);
+}
+.overlay-play-btn svg {
+  width: 26px;
+  height: 26px;
+  fill: #fff;
+}
+
+/* controls bar */
+.player-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px 12px;
+  background: #0d0d12;
+}
+
+.ctrl-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(176,174,232,0.8);
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+.ctrl-btn:hover { color: #fff; }
+.ctrl-btn svg { width: 18px; height: 18px; fill: currentColor; }
+
+/* progress */
+.progress-wrap { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+
+.progress-bar {
+  position: relative;
+  height: 4px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 2px;
+  cursor: pointer;
+}
+.progress-bar:hover .progress-fill { background: #AFA9EC; }
+.progress-bar:hover .progress-thumb { transform: translate(-50%, -50%) scale(1.3); }
+
+.progress-fill {
+  height: 100%;
+  background: #7F77DD;
+  border-radius: 2px;
+  width: 0%;
+  pointer-events: none;
+  transition: background 0.15s;
+}
+.progress-thumb {
+  position: absolute;
+  top: 50%;
+  left: 0%;
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  transition: transform 0.15s;
+}
+
+.time-row {
+  display: flex;
+  justify-content: space-between;
+}
+.time-txt {
+  font-size: 11px;
+  color: rgba(255,255,255,0.35);
+  font-family: monospace;
+}
+
+/* volume */
+.vol-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.vol-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 60px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.18);
+  cursor: pointer;
+  outline: none;
+}
+.vol-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #7F77DD;
+  cursor: pointer;
+}
+.vol-slider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #7F77DD;
+  border: none;
+  cursor: pointer;
+}
+
+/* speed */
+.speed-btn {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(176,174,232,0.9);
+  background: rgba(127,119,221,0.12);
+  border: 0.5px solid rgba(127,119,221,0.3);
+  border-radius: 6px;
+  padding: 3px 9px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+}
+.speed-btn:hover {
+  background: rgba(127,119,221,0.28);
+  color: #fff;
+}
+
+/* fullscreen in player mode */
+.player-outer:-webkit-full-screen { border-radius: 0; }
+.player-outer:-moz-full-screen { border-radius: 0; }
+.player-outer:fullscreen { border-radius: 0; }
+.player-outer:fullscreen video { max-height: 100vh; }
+</style>
 </head>
 <body>
 
@@ -23,7 +207,6 @@
     <li><a href="#como-funciona">Como funciona?</a></li>
     <li><a href="#demo">Veja em ação</a></li>
     <li><a href="#para-quem">Para quem é?</a></li>
-    <!-- <li><a href="#contato">Contato</a></li> -->
   </ul>
   <button class="nav-cta" onclick="document.getElementById('contato').scrollIntoView({behavior:'smooth'})">Solicitar acesso</button>
 </nav>
@@ -96,13 +279,69 @@
     <span class="section-label">Veja em ação</span>
     <h2>Uma demonstração rápida do Neurix funcionando.</h2>
     <p class="section-sub">Assista como o app transforma uma sessão lúdica em dados clínicos valiosos.</p>
+
     <div class="demo-media">
-      <video controls poster="demo-poster.png" style="max-width: 100%; border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
-        <source src="Landing Page.mp4" type="video/mp4">
-        Seu navegador não suporta vídeo.
-      </video>
-      <!-- Alternativa: <img src="demo.gif" alt="Demo do Neurix" style="max-width: 100%; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.3);" /> -->
-    </div>
+
+      <!-- ═══════════════════════════════════════════
+           PLAYER CUSTOMIZADO NEURIX
+           Substitui a tag <video> original.
+           O arquivo de vídeo continua sendo "Landing Page.mp4"
+           e o poster "demo-poster.png" — sem alterar nada mais.
+      ════════════════════════════════════════════ -->
+      <div class="player-outer" id="playerWrap">
+
+        <video id="vid" preload="metadata" poster="demo-poster.png">
+          <source src="Landing Page.mp4" type="video/mp4">
+          Seu navegador não suporta vídeo.
+        </video>
+
+        <!-- overlay de play inicial -->
+        <div class="player-overlay" id="playerOverlay">
+          <button class="overlay-play-btn" id="overlayBtn" aria-label="Reproduzir vídeo">
+            <svg viewBox="0 0 24 24"><path id="overlayIconPath" d="M8 5v14l11-7z"/></svg>
+          </button>
+        </div>
+
+        <!-- barra de controles -->
+        <div class="player-controls">
+
+          <!-- play / pause -->
+          <button class="ctrl-btn" id="playPauseBtn" aria-label="Play / Pause">
+            <svg viewBox="0 0 24 24"><path id="playPauseIcon" d="M8 5v14l11-7z"/></svg>
+          </button>
+
+          <!-- progresso + tempo -->
+          <div class="progress-wrap">
+            <div class="progress-bar" id="progressBar" role="slider" aria-label="Progresso do vídeo">
+              <div class="progress-fill" id="progressFill"></div>
+              <div class="progress-thumb" id="progressThumb"></div>
+            </div>
+            <div class="time-row">
+              <span class="time-txt" id="timeCurrent">0:00</span>
+              <span class="time-txt" id="timeDuration">0:00</span>
+            </div>
+          </div>
+
+          <!-- volume -->
+          <div class="vol-group">
+            <button class="ctrl-btn" id="muteBtn" aria-label="Mudo / Som">
+              <svg viewBox="0 0 24 24"><path id="volIconPath" d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+            </button>
+            <input class="vol-slider" type="range" min="0" max="1" step="0.05" value="1" id="volSlider" aria-label="Volume"/>
+          </div>
+
+          <!-- velocidade -->
+          <button class="speed-btn" id="speedBtn" aria-label="Velocidade de reprodução">1×</button>
+
+          <!-- tela cheia -->
+          <button class="ctrl-btn" id="fsBtn" aria-label="Tela cheia">
+            <svg viewBox="0 0 24 24"><path id="fsIconPath" d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+          </button>
+
+        </div><!-- /player-controls -->
+      </div><!-- /player-outer -->
+
+    </div><!-- /demo-media -->
   </div>
 </section>
 
@@ -207,9 +446,7 @@
             <input type="checkbox" id="autoriza" name="autoriza" required /> Autorizo o uso de meus dados para fins de contato e demonstração, em conformidade com a LGPD.
           </label>
         </div>
-        <!-- Campo honeypot anti-spam (invisível) -->
         <input type="text" name="_gotcha" style="display:none"/>
-        <!-- Redireciona de volta para a própria página após envio -->
         <input type="hidden" name="_next" value="?enviado=true"/>
         <button type="submit" class="form-submit" id="form-btn">Solicitar orçamento personalizado</button>
       </form>
@@ -232,5 +469,154 @@
 </footer>
 
 <script src="script.js"></script>
+
+<!-- ═══════════════════════════════════════════
+     SCRIPT DO PLAYER CUSTOMIZADO
+════════════════════════════════════════════ -->
+<script>
+(function () {
+  const vid          = document.getElementById('vid');
+  const overlay      = document.getElementById('playerOverlay');
+  const overlayBtn   = document.getElementById('overlayBtn');
+  const overlayPath  = document.getElementById('overlayIconPath');
+  const playPauseBtn = document.getElementById('playPauseBtn');
+  const playPauseIcon= document.getElementById('playPauseIcon');
+  const progressBar  = document.getElementById('progressBar');
+  const progressFill = document.getElementById('progressFill');
+  const progressThumb= document.getElementById('progressThumb');
+  const timeCurrent  = document.getElementById('timeCurrent');
+  const timeDuration = document.getElementById('timeDuration');
+  const muteBtn      = document.getElementById('muteBtn');
+  const volIconPath  = document.getElementById('volIconPath');
+  const volSlider    = document.getElementById('volSlider');
+  const speedBtn     = document.getElementById('speedBtn');
+  const fsBtn        = document.getElementById('fsBtn');
+  const playerWrap   = document.getElementById('playerWrap');
+
+  /* SVG path constants */
+  const P_PLAY  = 'M8 5v14l11-7z';
+  const P_PAUSE = 'M6 19h4V5H6v14zm8-14v14h4V5h-4z';
+  const P_VOL   = 'M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z';
+  const P_MUTE  = 'M16.5 12A4.5 4.5 0 0 0 14 7.97v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51A8.796 8.796 0 0 0 21 12c0-4.28-3-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25A7.04 7.04 0 0 1 14 17.27v2.06a8.989 8.989 0 0 0 4.24-2.27l1.52 1.52L21 17.27l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z';
+  const P_FS_IN = 'M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z';
+  const P_FS_OUT= 'M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z';
+
+  const speeds = [0.5, 1, 1.25, 1.5, 2];
+  let speedIdx = 1;
+
+  /* helpers */
+  function fmt(s) {
+    if (isNaN(s)) return '0:00';
+    const m = Math.floor(s / 60);
+    const sec = Math.floor(s % 60);
+    return m + ':' + (sec < 10 ? '0' : '') + sec;
+  }
+
+  function setIcons(playing) {
+    const d = playing ? P_PAUSE : P_PLAY;
+    playPauseIcon.setAttribute('d', d);
+    overlayPath.setAttribute('d', d);
+  }
+
+  function updateProgress() {
+    if (!vid.duration) return;
+    const pct = (vid.currentTime / vid.duration) * 100;
+    progressFill.style.width = pct + '%';
+    progressThumb.style.left = pct + '%';
+    timeCurrent.textContent = fmt(vid.currentTime);
+  }
+
+  function togglePlay() {
+    if (vid.paused) { vid.play(); } else { vid.pause(); }
+  }
+
+  /* events */
+  vid.addEventListener('play', () => {
+    setIcons(true);
+    overlay.classList.add('hidden');
+  });
+
+  vid.addEventListener('pause', () => {
+    setIcons(false);
+    overlay.classList.remove('hidden');
+  });
+
+  vid.addEventListener('ended', () => {
+    setIcons(false);
+    overlay.classList.remove('hidden');
+  });
+
+  vid.addEventListener('timeupdate', updateProgress);
+
+  vid.addEventListener('loadedmetadata', () => {
+    timeDuration.textContent = fmt(vid.duration);
+  });
+
+  /* seek on progress bar click */
+  let seeking = false;
+  function seek(e) {
+    const rect = progressBar.getBoundingClientRect();
+    const pct = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
+    vid.currentTime = pct * vid.duration;
+  }
+  progressBar.addEventListener('mousedown', (e) => { seeking = true; seek(e); });
+  document.addEventListener('mousemove', (e) => { if (seeking) seek(e); });
+  document.addEventListener('mouseup', () => { seeking = false; });
+
+  /* touch seek */
+  progressBar.addEventListener('touchstart', (e) => { seek(e.touches[0]); }, { passive: true });
+  progressBar.addEventListener('touchmove',  (e) => { seek(e.touches[0]); }, { passive: true });
+
+  /* play/pause buttons */
+  playPauseBtn.addEventListener('click', togglePlay);
+  overlayBtn.addEventListener('click', togglePlay);
+  vid.addEventListener('click', togglePlay);
+
+  /* volume */
+  muteBtn.addEventListener('click', () => {
+    vid.muted = !vid.muted;
+    volIconPath.setAttribute('d', vid.muted ? P_MUTE : P_VOL);
+    volSlider.value = vid.muted ? 0 : vid.volume;
+  });
+
+  volSlider.addEventListener('input', () => {
+    vid.volume = parseFloat(volSlider.value);
+    vid.muted = vid.volume === 0;
+    volIconPath.setAttribute('d', vid.muted ? P_MUTE : P_VOL);
+  });
+
+  /* speed */
+  speedBtn.addEventListener('click', () => {
+    speedIdx = (speedIdx + 1) % speeds.length;
+    vid.playbackRate = speeds[speedIdx];
+    speedBtn.textContent = speeds[speedIdx] + '×';
+  });
+
+  /* fullscreen */
+  fsBtn.addEventListener('click', () => {
+    if (!document.fullscreenElement) {
+      (playerWrap.requestFullscreen || playerWrap.webkitRequestFullscreen || function(){}).call(playerWrap);
+    } else {
+      (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
+    }
+  });
+
+  document.addEventListener('fullscreenchange', () => {
+    const inFS = !!document.fullscreenElement;
+    document.getElementById('fsIconPath').setAttribute('d', inFS ? P_FS_OUT : P_FS_IN);
+  });
+
+  /* keyboard shortcuts (space, arrows) when player is focused */
+  playerWrap.setAttribute('tabindex', '0');
+  playerWrap.addEventListener('keydown', (e) => {
+    if (e.code === 'Space') { e.preventDefault(); togglePlay(); }
+    if (e.code === 'ArrowRight') { vid.currentTime = Math.min(vid.duration, vid.currentTime + 5); }
+    if (e.code === 'ArrowLeft')  { vid.currentTime = Math.max(0, vid.currentTime - 5); }
+    if (e.code === 'ArrowUp')   { vid.volume = Math.min(1, vid.volume + 0.1); volSlider.value = vid.volume; }
+    if (e.code === 'ArrowDown') { vid.volume = Math.max(0, vid.volume - 0.1); volSlider.value = vid.volume; }
+  });
+})();
+</script>
+
 </body>
 </html>
